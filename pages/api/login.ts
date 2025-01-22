@@ -6,6 +6,10 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 const SECRET_KEY = process.env.SECRET_KEY || "sua_chave_secreta";
 
+if (!SECRET_KEY) {
+  throw new Error("A variável de ambiente SECRET_KEY não está definida.");
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
