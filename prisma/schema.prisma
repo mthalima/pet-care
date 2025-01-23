@@ -14,25 +14,30 @@ datasource db {
 }
 
 model User {
-  id        Int       @id @default(autoincrement()) // Chave primária
-  email     String    @unique // E-mail único
-  password  String // Hash da senha
-  createdAt DateTime  @default(now()) // Data de criação
-  updatedAt DateTime  @updatedAt // Atualizado automaticamente
-  pets      Pet[] // Relacionamento com Pets
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  role      Role     @default(PET_OWNER) // Tipo do usuário
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  pets      Pet[]    // Relacionamento com Pets
   Session   Session[]
 }
 
 model Pet {
-  id        Int       @id @default(autoincrement()) // Chave primária
-  name      String // Nome do pet
-  species   String // Espécie do pet (cachorro, gato, etc.)
-  breed     String? // Raça (opcional)
-  birthDate DateTime? // Data de nascimento (opcional)
-  ownerId   Int // Referência ao dono
-  owner     User      @relation(fields: [ownerId], references: [id]) // Relacionamento com o usuário
+  id        Int      @id @default(autoincrement())
+  name      String
+  species   String
+  birthDate DateTime?
+  ownerId   Int
+  owner     User     @relation(fields: [ownerId], references: [id])
   createdAt DateTime  @default(now()) // Data de criação
   updatedAt DateTime  @updatedAt // Atualizado automaticamente
+}
+
+enum Role {
+  PET_OWNER  // Dono de pet
+  CARETAKER  // Cuidador
 }
 
 model Session {

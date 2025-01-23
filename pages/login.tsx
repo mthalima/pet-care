@@ -1,54 +1,66 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/router";
 
-const Login = () => {
+const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
   const router = useRouter();
 
-  const handleLogin = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
     try {
       const response = await fetch("/api/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ email, password }),
       });
 
-      if (!response.ok) {
+      if (response.ok) {
+        // Login bem-sucedido, redirecionar para a Home
+        router.push("/home");
+      } else {
+        // Trate erros retornados pelo backend
         const { message } = await response.json();
-        setMessage(message);
-        return;
+        setError(message || "Erro ao fazer login.");
       }
-
-      const { token } = await response.json();
-      localStorage.setItem("token", token);
-      setMessage("Login bem-sucedido!");
-      router.push("/dashboard");
-    } catch {
-      setMessage("Erro ao conectar ao servidor.");
+    } catch (err) {
+      console.error(err);
+      setError("Erro ao conectar com o servidor.");
     }
   };
 
   return (
-    <div>
+    <div style={{ maxWidth: "400px", margin: "0 auto", padding: "1rem" }}>
       <h1>Login</h1>
-      {message && <p>{message}</p>}
-      <input
-        type="email"
-        placeholder="E-mail"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="Senha"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button onClick={handleLogin}>Entrar</button>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Email:</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label>Senha:</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit">Entrar</button>
+      </form>
     </div>
   );
 };
 
-export default Login;
+export default LoginPage;
