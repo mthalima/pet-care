@@ -16,28 +16,48 @@ datasource db {
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
+  name      String
   password  String
-  role      Role     @default(PET_OWNER) // Tipo do usuário
+  role      Role     @default(PET_OWNER) // Tipo do usuário (Dono ou Cuidador)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  pets      Pet[]    // Relacionamento com Pets
+
+  // Relacionamento com os pets do usuário (se for dono de pets)
+  pets Pet[] // Pets que pertencem ao usuário
+
+  // Relacionamento com os pets que está cuidando (se for cuidador)
+  caredPets CaredPet[] // Pets que o usuário está cuidando
   Session   Session[]
 }
 
 model Pet {
-  id        Int      @id @default(autoincrement())
+  id        Int        @id @default(autoincrement())
   name      String
   species   String
   birthDate DateTime?
-  ownerId   Int
-  owner     User     @relation(fields: [ownerId], references: [id])
-  createdAt DateTime  @default(now()) // Data de criação
-  updatedAt DateTime  @updatedAt // Atualizado automaticamente
+  ownerId   Int // ID do dono do pet
+  owner     User       @relation(fields: [ownerId], references: [id]) // Relacionamento com o dono do pet
+  caredBy   CaredPet[]
+}
+
+model CaredPet {
+  id     Int @id @default(autoincrement())
+  userId Int // ID do cuidador
+  petId  Int // ID do pet sendo cuidado
+
+  // Relacionamento com o cuidador
+  user User @relation(fields: [userId], references: [id])
+
+  // Relacionamento com o pet
+  pet Pet @relation(fields: [petId], references: [id])
+
+  // Constrange para garantir que um pet só é cuidado por um cuidador por vez
+  @@unique([userId, petId])
 }
 
 enum Role {
-  PET_OWNER  // Dono de pet
-  CARETAKER  // Cuidador
+  PET_OWNER // Dono de pet
+  CARETAKER // Cuidador
 }
 
 model Session {
