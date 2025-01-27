@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useRouter } from "next/router";
 import "./../app/globals.css";
 
 const RegisterPage = () => {
@@ -8,6 +9,8 @@ const RegisterPage = () => {
     password: "",
     role: "PET_OWNER",
   });
+
+  const router = useRouter();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -27,7 +30,7 @@ const RegisterPage = () => {
 
       const result = await response.json();
       if (response.ok) {
-        alert("Usuário cadastrado com sucesso!");
+        await router.push(`/profile/${result.user.id}`);
       } else {
         alert(result.message || "Erro ao cadastrar usuário.");
       }
@@ -58,7 +61,7 @@ const RegisterPage = () => {
               value={formData.name}
               onChange={handleChange}
               placeholder="Digite seu nome"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-orange-600 dark:text-orange-400"
               required
             />
           </div>
@@ -78,7 +81,7 @@ const RegisterPage = () => {
               value={formData.email}
               onChange={handleChange}
               placeholder="Digite seu email"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-orange-600 dark:text-orange-400"
               required
             />
           </div>
@@ -98,7 +101,7 @@ const RegisterPage = () => {
               value={formData.password}
               onChange={handleChange}
               placeholder="Digite sua senha"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-orange-600 dark:text-orange-400"
               required
             />
           </div>
@@ -116,7 +119,7 @@ const RegisterPage = () => {
               name="role"
               value={formData.role}
               onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-orange-600 dark:text-orange-400"
               required
             >
               <option value="PET_OWNER">Dono de Pet</option>
