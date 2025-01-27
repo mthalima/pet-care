@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { withAuth } from "../../utils/authUtils";
 import "../../app/globals.css";
 
 type Pet = {
@@ -23,20 +24,12 @@ const ProfilePage = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!id) return;
+    const token = withAuth(router); // Verifica autenticação
+
+    if (!token) return; // Se o usuário não estiver autenticado, já será redirecionado.
 
     const fetchUserData = async () => {
       try {
-        // Obtém o token JWT do localStorage
-        const token = localStorage.getItem("authToken");
-
-        if (!token) {
-          setError("Usuário não autenticado. Faça login para continuar.");
-          router.push("/login");
-          return;
-        }
-
-        // Faz a requisição com o token no cabeçalho de autenticação
         const response = await fetch(`/api/profile/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
