@@ -1,25 +1,18 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
-import jwt from "jsonwebtoken";
+import { verifyToken } from "../../utils/auth";
 
 const prisma = new PrismaClient();
-const SECRET_KEY = process.env.SECRET_KEY || "sua_chave_secreta";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   if (req.method === "POST") {
-    const token = req.cookies.token; // Supondo que o token JWT esteja armazenado nos cookies
-
-    if (!token) {
-      return res.status(401).json({ message: "Usuário não autenticado." });
-    }
-
     try {
-      // Verifique e decodifique o token JWT
-      const decoded: any = jwt.verify(token, SECRET_KEY);
-      const { id: ownerId } = decoded;
+      const authHeader = req.headers.authorization;
+      console.log("Token recebido no backend:", authHeader);
+      const ownerId = verifyToken(req); // Verifica a autenticação
 
       const { name, species, birthDate } = req.body;
 
@@ -39,9 +32,9 @@ export default async function handler(
       });
 
       return res.status(201).json(pet);
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: "Erro ao cadastrar pet." });
+    } catch (error: any) {
+      console.error("Erro na autenticação:", error.message);
+      return res.status(401).json({ message: error.message });
     } finally {
       await prisma.$disconnect();
     }

@@ -25,16 +25,12 @@ const ProfilePage = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!id) {
-      // Aguarda até que o `id` esteja disponível
-      return;
-    }
+    if (!id) return;
 
     const fetchUserData = async () => {
-      const token = withAuth(router); // Verifica autenticação
+      const token = withAuth(router);
 
       if (!token) {
-        console.error("Token de autenticação não encontrado");
         setError("Você precisa estar autenticado para acessar esta página.");
         setLoading(false);
         return;
@@ -42,9 +38,7 @@ const ProfilePage = () => {
 
       try {
         const response = await fetch(`/api/profile/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         if (!response.ok) {
@@ -53,10 +47,8 @@ const ProfilePage = () => {
         }
 
         const data = await response.json();
-        console.log("Dados do usuário carregados:", data);
-        setUser(data); // Atualiza o estado com os dados do usuário
+        setUser(data);
       } catch (err: any) {
-        console.error("Erro ao buscar dados do usuário:", err);
         setError(err.message || "Erro ao carregar os dados do perfil.");
       } finally {
         setLoading(false);
@@ -99,6 +91,14 @@ const ProfilePage = () => {
         <h2 className="text-2xl font-semibold text-orange-600 mb-4">
           Meus Pets
         </h2>
+
+        <button
+          onClick={() => router.push("/add-pet")}
+          className="mb-6 px-4 py-2 bg-orange-600 text-white rounded-lg shadow-md hover:bg-orange-700 transition"
+        >
+          Adicionar Novo Pet
+        </button>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {user.pets.map((pet) => (
             <div
