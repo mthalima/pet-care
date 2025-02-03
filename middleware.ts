@@ -14,7 +14,7 @@ export function middleware(req: NextRequest) {
   }
 
   const token = authHeader.split(" ")[1];
-
+  console.log("Token recebido no backend:", token);
   try {
     const decoded: any = jwt.verify(token, SECRET_KEY);
 
